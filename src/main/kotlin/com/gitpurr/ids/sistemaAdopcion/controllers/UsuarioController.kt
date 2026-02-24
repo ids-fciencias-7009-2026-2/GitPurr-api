@@ -93,6 +93,7 @@ class UsuarioController {
         )
 
         return ResponseEntity.ok(logoutResponse)
+    }
 
     // ==========================================================
     // 5. PUT /usuarios
