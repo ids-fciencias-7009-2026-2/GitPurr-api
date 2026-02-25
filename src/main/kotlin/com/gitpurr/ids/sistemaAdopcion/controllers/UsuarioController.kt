@@ -4,11 +4,13 @@ import com.gitpurr.ids.sistemaAdopcion.domain.Usuario
 import com.gitpurr.ids.sistemaAdopcion.domain.toUsuario
 import com.gitpurr.ids.sistemaAdopcion.dto.request.CreateUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.request.LoginUsuarioRequest
+import com.gitpurr.ids.sistemaAdopcion.dto.request.response.LogoutResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.request.response.UsuarioResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 /**
  * Controlador encargado de exponer los endpoints REST relacionados
@@ -70,5 +72,25 @@ class UsuarioController {
             // Login fallido: Es obligatorio devolver HTTP 401 Unauthorized [cite: 121, 137]
             ResponseEntity.status(401).body(mapOf("error" to "Credenciales incorrectas"))
         }
+    }
+    // ==========================================================
+    // 4. POST /usuarios/logout
+    // ==========================================================
+    @PostMapping("/logout")
+    fun logout(): ResponseEntity<Any> {
+
+        val usuarioFake = Usuario(
+
+            id = "1",
+            nombre = "Brenda",
+            email = "brenda@email.com"
+        )
+
+        val logoutResponse = LogoutResponse(
+            usuarioFake.id,
+            LocalDateTime.now().toString()
+        )
+
+        return ResponseEntity.ok(logoutResponse)
     }
 }
