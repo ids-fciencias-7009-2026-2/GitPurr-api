@@ -81,7 +81,6 @@ class UsuarioController {
     fun logout(): ResponseEntity<Any> {
 
         val usuarioFake = Usuario(
-
             id = "1",
             nombre = "Brenda",
             email = "brenda@email.com"
@@ -93,6 +92,7 @@ class UsuarioController {
         )
 
         return ResponseEntity.ok(logoutResponse)
+    } //
 
     // ==========================================================
     // 5. PUT /usuarios
