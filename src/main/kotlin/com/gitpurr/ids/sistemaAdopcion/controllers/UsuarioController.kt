@@ -71,4 +71,25 @@ class UsuarioController {
             ResponseEntity.status(401).body(mapOf("error" to "Credenciales incorrectas"))
         }
     }
+
+    // ==========================================================
+    // 5. PUT /usuarios
+    // ==========================================================
+    @PutMapping
+    fun actualizarUsuario(
+        @RequestBody request: CreateUsuarioRequest
+    ): ResponseEntity<UsuarioResponse> {
+
+        // Como no hay BD ni autenticación real, simulamos que el usuario actual es el id = 1
+        val usuarioActualizado = UsuarioResponse(
+            id = 1,
+            nombre = request.nombre,
+            email = request.email
+        )
+
+        logger.info("Usuario actualizado (simulado): $usuarioActualizado")
+
+        // HTTP 200 OK
+        return ResponseEntity.ok(usuarioActualizado)
+    }
 }
