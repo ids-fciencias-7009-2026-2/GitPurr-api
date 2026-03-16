@@ -1,4 +1,4 @@
-package com.gitpurr.ids.sistemaAdopcion.dto.request.response
+package com.gitpurr.ids.sistemaAdopcion.dto.response
 
 /**
  * DTO utilizado para enviar la información del usuario al cliente.

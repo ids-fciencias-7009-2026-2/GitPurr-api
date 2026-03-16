@@ -15,7 +15,7 @@ data class Usuario(
      * Identificador único del usuario.
      * No se puede modificar.
      */
-    val id: String,
+    val id: String? = null,
 
     /**
      * Nombre del usuario.
@@ -33,5 +33,11 @@ data class Usuario(
      * Contraseña del usuario.
      * Es nullable y no siempre se necesita.
      */
-    var password: String? = null
+    var password: String? = null,
+
+    /**
+     * Token del usuario.
+     * Es nullable y no siempre se necesita.
+     */
+    var token: String? = null,
 )

@@ -1,6 +1,8 @@
 package com.gitpurr.ids.sistemaAdopcion.domain
 
 import com.gitpurr.ids.sistemaAdopcion.dto.request.CreateUsuarioRequest
+import com.gitpurr.ids.sistemaAdopcion.dto.response.UsuarioResponse
+import com.gitpurr.ids.sistemaAdopcion.entities.UsuarioEntity
 import java.util.UUID
 
 /**
@@ -15,13 +17,16 @@ import java.util.UUID
  */
 fun CreateUsuarioRequest.toUsuario(): Usuario {
 
-    // Generamos un identificador de forma aleatoria
-    val id = "id-random-" + UUID.randomUUID().toString()
-
     // Creamos el objeto de dominio usando los datos del DTO
     return Usuario(
-        id = id,
         nombre = this.nombre,
-        email = this.email
+        email = this.email,
+        password = this.password,
     )
+
 }
+
+fun UsuarioEntity.toUsuario(): Usuario {
+    return Usuario(id = this.id.toString(), nombre = this.nombre, email = this.email, token = this.token)
+}
+

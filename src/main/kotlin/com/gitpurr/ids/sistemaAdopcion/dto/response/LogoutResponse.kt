@@ -1,4 +1,4 @@
-package com.gitpurr.ids.sistemaAdopcion.dto.request.response
+package com.gitpurr.ids.sistemaAdopcion.dto.response
 
 /**
  * DTO utilizado para enviar información al cliente
@@ -32,7 +32,7 @@ package com.gitpurr.ids.sistemaAdopcion.dto.request.response
  * No representa una entidad de base de datos.
  * No es el modelo interno del sistema.
  *
- * Simplemente define qué información queremos exponer externamente.
+ * Simplemente, define qué información queremos exponer externamente.
  */
 data class LogoutResponse(
 

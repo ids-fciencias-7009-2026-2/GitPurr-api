@@ -7,3 +7,9 @@ CREATE TABLE usuario (
                          password VARCHAR(255) NOT NULL,
                          token VARCHAR(255)
 );
+
+-- se añadieron timestamps:
+ALTER TABLE usuario
+ADD created_at DATETIME,
+ADD updated_at DATETIME,
+ADD deleted_at DATETIME;

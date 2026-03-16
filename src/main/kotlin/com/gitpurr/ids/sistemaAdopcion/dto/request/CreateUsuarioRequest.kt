@@ -14,5 +14,10 @@ data class CreateUsuarioRequest(
     /**
      * Correo electrónico enviado por el cliente.
      */
-    val email: String
+    val email: String,
+
+    /**
+     * Contraseña enviada por el cliente.
+     */
+    val password: String
 )
