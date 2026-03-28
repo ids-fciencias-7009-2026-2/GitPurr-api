@@ -1,4 +1,4 @@
-GitPurr API - Sistema de Adopción 
+# GitPurr API - Sistema de Adopción 
 
 Este proyecto es una API construida con **Spring Boot**, **Kotlin**, **JPA** y **Maven**. 
 
@@ -11,61 +11,62 @@ Este proyecto es una API construida con **Spring Boot**, **Kotlin**, **JPA** y *
 
 ---
 
-Configuración de la Base de Datos (MariaDB)
+## Configuración de la Base de Datos (MariaDB)
 
-Para que el proyecto funcione localmente:
+Para que el proyecto funcione localmente, es necesario inicializar la base de datos desde cero utilizando el script de esquema principal.
 
-Levantar el servicio (en Linux)
+**1. Levantar el servicio (en Linux)**
 Si el servicio no está activo, ejecute:
-
+```bash
 sudo systemctl start mariadb
+```
 
+**2. Construir la Base de Datos y Tablas**
+Acceda como root asegurándose de estar en la raíz del proyecto y ejecute el esquema:
+```bash
+sudo mariadb -u root
+source database/schema.sql;
+```
 
-Crear Base de Datos, Usuario y Permisos
-
-Acceda como root (`sudo mariadb -u root`) y ejecute los siguientes comandos:
-Crear la Tabla Usuario
-
-Utilice el script ubicado en `/database/usuario.sql` o ejecute lo siguiente:
-
+**3. Crear Usuario y Permisos (Primera vez)**
+Si no ha configurado el usuario de la API localmente, ejecute lo siguiente en la consola de MariaDB:
 ```sql
-USE AppAdopcion;
-La aplicación no arrancará sin el archivo de configuración. Cree un archivo llamado .env en la raíz del proyecto (al mismo nivel que `pom.xml`) 
+CREATE USER 'gitpurr_user'@'localhost' IDENTIFIED BY 'admin123';
+GRANT ALL PRIVILEGES ON AppAdopcion.* TO 'gitpurr_user'@'localhost';
+FLUSH PRIVILEGES;
+```
 
-> **Nota:** Este archivo está excluido en el `.gitignore` por seguridad.
+---
+
+## Configuración del Entorno (.env)
+
+La aplicación no arrancará sin su archivo de configuración. Cree un archivo llamado `.env` en la raíz del proyecto (al mismo nivel que `pom.xml`) con el siguiente contenido:
+
+```env
+URL_DB=localhost:3306/AppAdopcion
+USER_DB=gitpurr_user
+PASSWORD_DB=admin123
+```
+> **Nota:** Este archivo está excluido en el `.gitignore` por seguridad y no debe subirse al repositorio.
 
 ---
 
 ## Cómo levantar el Proyecto
 
 ### Opción 1: Desde la Terminal
-
-Ejecute el siguiente comando para limpiar, compilar y arrancar:
-
+Ejecute el siguiente comando para limpiar, compilar y arrancar el servidor:
 ```bash
 ./mvnw clean spring-boot:run
-
 ```
 
-Opción 2: Desde IntelliJ IDEA
-
+### Opción 2: Desde IntelliJ IDEA
 1. Asegúrese de que el archivo `.env` esté en la raíz.
 2. Haga clic en el botón **Run** en la clase `SistemaAdopcionApplication.kt`.
 
 ### Verificación de éxito
-
-La aplicación se ha iniciado correctamente si en la consola aparece:
-`Tomcat started on port(s): 8080 (http)` y no hay errores de `HikariPool` o `DotenvException`.
+La aplicación se ha iniciado correctamente si en la consola aparece: `Tomcat started on port(s): 8080 (http)` y no hay errores de conexión.
 
 ---
 
-Insertar un Usuario de Prueba
-
-
-INSERT INTO usuario (nombre, email, password, token) 
-VALUES ('Ayudante de Laboratorio', 'ayudante@test.com', 'admin123', 'token_temporal_abc123');
-
-B. Consultar Usuarios Registrados
-SQL
-
-SELECT * FROM usuario;
+## Pruebas
+Puede probar los endpoints utilizando la colección de Postman incluida en la carpeta `/postman`. Asegúrese de registrar un usuario e iniciar sesión para obtener su token Bearer.
