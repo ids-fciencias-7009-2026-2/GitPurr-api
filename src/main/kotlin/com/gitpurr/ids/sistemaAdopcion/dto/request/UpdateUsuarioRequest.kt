@@ -17,7 +17,9 @@ data class UpdateUsuarioRequest(
     val email: String? = null,
 
     /**
-     * Contraseña actualizada del usuario.
+     * Contraseña actualizada del usuario. Requiere
+     * la password actual por motivos de seguridad.
      */
-    val password: String? = null
+    val passwordOld: String? = null,
+    val passwordNew: String? = null
 )

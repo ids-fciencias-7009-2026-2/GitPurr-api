@@ -152,7 +152,7 @@ class UsuarioController {
     fun actualizarUsuario(
         @RequestHeader("Authorization", required = false) token: String?,
         @RequestBody request: UpdateUsuarioRequest
-    ): ResponseEntity<Usuario> {
+    ): ResponseEntity<Any> {
 
         logger.info("Token recibido: $token")
 
@@ -162,33 +162,29 @@ class UsuarioController {
 
         val soloToken = token.removePrefix("Bearer ").trim()
 
-        // Validar que al menos un campo venga
-        if (request.nombre == null && request.email == null && request.password == null) {
+        // verificamos que venga al menos un campo en el body
+        if (request.nombre == null && request.email == null && request.passwordNew == null) {
             return ResponseEntity.badRequest().build()
         }
 
-        // Convertimos manualmente a dominio (NO usar toUsuario aquí)
-        val usuarioActualizado = Usuario(
-            nombre = request.nombre ?: "",
-            email = request.email ?: "",
-            password = null
-        )
+        return try {
+            val resultado = usuarioService.actualizarUsuario(
+                token = soloToken,
+                nombre = request.nombre,
+                email = request.email,
+                passwordOld = request.passwordOld,
+                passwordNew = request.passwordNew?.let { hashPassword(it) }
+            )
 
-        // Si viene contraseña → hash
-        if (!request.password.isNullOrBlank()) {
-            usuarioActualizado.password = hashPassword(request.password)
+            if (resultado == null) {
+                ResponseEntity.status(401).build()
+            } else {
+                ResponseEntity.ok(resultado)
+            }
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(403).build()    // acceso denegado (contraseña actual no proporcionada o incorrecta)
         }
 
-        val resultado = usuarioService.actualizarUsuario(soloToken, usuarioActualizado)
-
-        if (resultado == null) {
-            return ResponseEntity.status(401).build()
-        }
-
-        logger.info("Usuario actualizado correctamente: $resultado")
-
-        return ResponseEntity.ok(resultado)
     }
-
 
 }

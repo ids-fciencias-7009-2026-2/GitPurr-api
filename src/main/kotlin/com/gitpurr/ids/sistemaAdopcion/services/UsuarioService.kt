@@ -7,6 +7,7 @@ import com.gitpurr.ids.sistemaAdopcion.repositories.toUsuarioEntity
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.security.MessageDigest
 import java.util.UUID
 
 @Service
@@ -65,7 +66,13 @@ class UsuarioService {
         return token
     }
 
-    fun actualizarUsuario(token: String, usuarioActualizado: Usuario): Usuario? {
+    fun actualizarUsuario(
+        token: String,
+        nombre: String?,
+        email: String?,
+        passwordOld: String?,
+        passwordNew: String?
+    ): Usuario? {
         val usuarioEntity = usuarioRepository.findByToken(token)
 
         if (usuarioEntity == null) {
@@ -73,22 +80,41 @@ class UsuarioService {
             return null
         }
 
-        // Actualización parcial segura
-        if (usuarioActualizado.nombre.isNotBlank()) {
-            usuarioEntity.nombre = usuarioActualizado.nombre
+        // actualización de nombre
+        if (!nombre.isNullOrBlank()) {
+            usuarioEntity.nombre = nombre
         }
 
-        if (usuarioActualizado.email.isNotBlank()) {
-            usuarioEntity.email = usuarioActualizado.email
+        // actualización de email
+        if (!email.isNullOrBlank()) {
+            usuarioEntity.email = email
         }
 
-        if (!usuarioActualizado.password.isNullOrBlank()) {
-            usuarioEntity.password = usuarioActualizado.password!!
+        // actualización de contraseña
+        if (!passwordNew.isNullOrBlank()) {
+            // se requiere la contraseña actual para actualizar
+            if (passwordOld.isNullOrBlank()) {
+                // excepción si no se proporciona
+                throw IllegalArgumentException("PASSWORD_REQUIRED")
+            }
+
+            val passwordOldHash = hashPassword(passwordOld)
+
+            if (usuarioEntity.password != passwordOldHash) {
+                // excepción si la contraseña actual no coincide
+                throw IllegalArgumentException("INVALID_PASSWORD")
+            }
+            usuarioEntity.password = passwordNew
         }
 
         usuarioRepository.save(usuarioEntity)
-
         return usuarioEntity.toUsuario()
     }
 
+    fun hashPassword(password: String): String {
+        val bytes = MessageDigest
+            .getInstance("SHA-256")
+            .digest(password.toByteArray())
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
 }
