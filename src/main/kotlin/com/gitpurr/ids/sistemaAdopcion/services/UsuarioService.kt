@@ -65,4 +65,30 @@ class UsuarioService {
         return token
     }
 
+    fun actualizarUsuario(token: String, usuarioActualizado: Usuario): Usuario? {
+        val usuarioEntity = usuarioRepository.findByToken(token)
+
+        if (usuarioEntity == null) {
+            logger.warn("Usuario no encontrado para token: $token")
+            return null
+        }
+
+        // Actualización parcial segura
+        if (usuarioActualizado.nombre.isNotBlank()) {
+            usuarioEntity.nombre = usuarioActualizado.nombre
+        }
+
+        if (usuarioActualizado.email.isNotBlank()) {
+            usuarioEntity.email = usuarioActualizado.email
+        }
+
+        if (!usuarioActualizado.password.isNullOrBlank()) {
+            usuarioEntity.password = usuarioActualizado.password!!
+        }
+
+        usuarioRepository.save(usuarioEntity)
+
+        return usuarioEntity.toUsuario()
+    }
+
 }

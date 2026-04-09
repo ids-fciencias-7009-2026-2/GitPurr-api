@@ -4,6 +4,7 @@ import com.gitpurr.ids.sistemaAdopcion.domain.Usuario
 import com.gitpurr.ids.sistemaAdopcion.domain.toUsuario
 import com.gitpurr.ids.sistemaAdopcion.dto.request.CreateUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.request.LoginUsuarioRequest
+import com.gitpurr.ids.sistemaAdopcion.dto.request.UpdateUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.response.LoginResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.LogoutResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.UsuarioResponse
@@ -124,7 +125,7 @@ class UsuarioController {
         @RequestHeader("Authorization") token: String?
     ): ResponseEntity<Any> {
         logger.info("Token recibido: $token")
-        if(token == null) {
+        if (token == null) {
             return ResponseEntity.status(401).build()
         }
         val soloToken = token.removePrefix("Bearer ").trim()
@@ -149,19 +150,45 @@ class UsuarioController {
     // ==========================================================
     @PutMapping
     fun actualizarUsuario(
-        @RequestBody request: CreateUsuarioRequest
-    ): ResponseEntity<UsuarioResponse> {
+        @RequestHeader("Authorization", required = false) token: String?,
+        @RequestBody request: UpdateUsuarioRequest
+    ): ResponseEntity<Usuario> {
 
-        // Como no hay BD ni autenticación real, simulamos que el usuario actual es el id = 1
-        val usuarioActualizado = UsuarioResponse(
-            id = 1,
-            nombre = request.nombre,
-            email = request.email
+        logger.info("Token recibido: $token")
+
+        if (token == null) {
+            return ResponseEntity.status(401).build()
+        }
+
+        val soloToken = token.removePrefix("Bearer ").trim()
+
+        // Validar que al menos un campo venga
+        if (request.nombre == null && request.email == null && request.password == null) {
+            return ResponseEntity.badRequest().build()
+        }
+
+        // Convertimos manualmente a dominio (NO usar toUsuario aquí)
+        val usuarioActualizado = Usuario(
+            nombre = request.nombre ?: "",
+            email = request.email ?: "",
+            password = null
         )
 
-        logger.info("Usuario actualizado (simulado): $usuarioActualizado")
+        // Si viene contraseña → hash
+        if (!request.password.isNullOrBlank()) {
+            usuarioActualizado.password = hashPassword(request.password)
+        }
 
-        // HTTP 200 OK
-        return ResponseEntity.ok(usuarioActualizado)
+        val resultado = usuarioService.actualizarUsuario(soloToken, usuarioActualizado)
+
+        if (resultado == null) {
+            return ResponseEntity.status(401).build()
+        }
+
+        logger.info("Usuario actualizado correctamente: $resultado")
+
+        return ResponseEntity.ok(resultado)
     }
+
+
 }
