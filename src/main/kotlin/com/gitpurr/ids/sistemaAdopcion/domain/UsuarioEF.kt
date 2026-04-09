@@ -27,6 +27,10 @@ fun CreateUsuarioRequest.toUsuario(): Usuario {
 }
 
 fun UsuarioEntity.toUsuario(): Usuario {
-    return Usuario(id = this.id.toString(), nombre = this.nombre, email = this.email, token = this.token)
+    return Usuario(
+        id = this.id.toString(),
+        nombre = this.nombre,
+        email = this.email,
+        token = this.token)
 }
 
