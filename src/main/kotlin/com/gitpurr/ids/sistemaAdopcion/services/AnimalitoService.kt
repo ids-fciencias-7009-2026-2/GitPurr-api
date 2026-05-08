@@ -13,6 +13,8 @@ class AnimalitoService {
 
     @Autowired
     lateinit var animalitoRepository: AnimalitoRepository
+    @Autowired
+    lateinit var geocodioService: GeocodioService
 
     @Autowired
     lateinit var usuarioRepository: UsuarioRepository
@@ -20,6 +22,9 @@ class AnimalitoService {
     fun registrarAnimalito(token: String, animalito: Animalito): Animalito? {
         val usuarioEntity = usuarioRepository.findByToken(token) ?: return null
 
+        val (lat,lng) = geocodioService.obtenerCoordenadas(animalito.codigoPostal)
+        animalito.latitudAprox = lat
+        animalito.longitudAprox = lng
         val animalitoEntity = animalito.toAnimalitoEntity(usuarioEntity)
         val guardado = animalitoRepository.save(animalitoEntity)
 
