@@ -56,4 +56,15 @@ class AnimalitoController {
 
         return ResponseEntity.ok(animalitos)
     }
+
+    @GetMapping("/{id}")
+    fun obtenerAnimalito(@PathVariable id: Long): ResponseEntity<Any> {
+        val animalito = animalitoService.obtenerAnimalitoPorId(id)
+
+        return if (animalito == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity.ok(animalito.toAnimalitoResponse())
+        }
+    }
 }
