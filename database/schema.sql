@@ -1,18 +1,19 @@
 CREATE DATABASE IF NOT EXISTS AppAdopcion;
 USE AppAdopcion;
 
-DROP TABLE IF EXISTS animalito;
+-- Limpieza previa para ejecución segura
 DROP TABLE IF EXISTS usuario;
 
+-- Estructura de la tabla usuario (estado actual real)
 CREATE TABLE usuario (
-                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         nombre VARCHAR(150) NOT NULL,
-                         email VARCHAR(150) NOT NULL UNIQUE,
-                         password VARCHAR(255) NOT NULL,
-                         token VARCHAR(255),
-                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                         deleted_at DATETIME
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    token VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at DATETIME
 );
 
 CREATE TABLE animalito (
@@ -35,3 +36,7 @@ CREATE TABLE animalito (
                            CONSTRAINT fk_animalito_usuario
                                FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
+ALTER TABLE usuario
+ADD COLUMN codigo_postal VARCHAR(5) NOT NULL,
+ADD COLUMN latitud DECIMAL(10,8),
+ADD COLUMN longitud DECIMAL(11,8);

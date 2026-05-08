@@ -7,6 +7,7 @@ import com.gitpurr.ids.sistemaAdopcion.dto.request.LoginUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.request.UpdateUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.response.LoginResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.LogoutResponse
+import com.gitpurr.ids.sistemaAdopcion.dto.response.UbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.UsuarioResponse
 import com.gitpurr.ids.sistemaAdopcion.services.UsuarioService
 import org.slf4j.Logger
@@ -125,7 +126,7 @@ class UsuarioController {
         @RequestHeader("Authorization") token: String?
     ): ResponseEntity<Any> {
         logger.info("Token recibido: $token")
-        if (token == null) {
+        if(token == null) {
             return ResponseEntity.status(401).build()
         }
         val soloToken = token.removePrefix("Bearer ").trim()
@@ -185,6 +186,24 @@ class UsuarioController {
             ResponseEntity.status(403).build()    // acceso denegado (contraseña actual no proporcionada o incorrecta)
         }
 
+    }
+
+    /**
+     * Permite obtener las coordenadas de un usuario
+     * con el formato de lat y lng
+     */
+    @GetMapping("/me/ubicacion")
+    fun obtenerUbicacion(
+        @RequestHeader("Authorization") token: String?
+    ) : ResponseEntity<UbicacionResponse> {
+
+        logger.info("Token recibido: $token")
+        val ubicaionUsuario = usuarioService.obtenerUbicacion(token)
+            ?: return ResponseEntity.status(401).build()
+
+        logger.info("Ubicacion obtenida en coordenadas:{}",ubicaionUsuario)
+
+        return ResponseEntity.ok(ubicaionUsuario)
     }
 
 }

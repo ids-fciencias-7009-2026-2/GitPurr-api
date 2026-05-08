@@ -40,4 +40,22 @@ data class Usuario(
      * Es nullable y no siempre se necesita.
      */
     var token: String? = null,
+
+    /**
+     * Codigo postal de la ubicacion del cliente.
+     * Campo actualizable
+     */
+    var codigoPostal: String = "",
+
+    /**
+     * Latitud recuperada a partir del codigo postal.
+     * Campo actualizable por la relacion con codigo postal.
+     */
+    var latitud: Double? = null,
+
+    /**
+     * Longitud recuperada a paritr del codigo postal.
+     * Campo actualizable por la relacion con codigo postal.
+     */
+    var longitud: Double? = null,
 )

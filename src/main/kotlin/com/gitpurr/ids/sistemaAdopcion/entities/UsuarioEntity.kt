@@ -20,13 +20,15 @@ data class UsuarioEntity(
     var password: String = "",
     var token: String? = null,
     var nombre: String = "",
-
     @Column(name = "created_at")
     var createdAt: LocalDateTime? = null,
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null,
     @Column(name = "deleted_at")
-    var deletedAt: LocalDateTime? = null
+    var deletedAt: LocalDateTime? = null,
+    var codigoPostal: String = "",
+    var latitud: Double? = null,
+    var longitud: Double? = null,
 ) {
 
     @PrePersist

@@ -1,7 +1,9 @@
 package com.gitpurr.ids.sistemaAdopcion.services
 
 import com.gitpurr.ids.sistemaAdopcion.domain.Usuario
+import com.gitpurr.ids.sistemaAdopcion.domain.toUbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.domain.toUsuario
+import com.gitpurr.ids.sistemaAdopcion.dto.response.UbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.repositories.UsuarioRepository
 import com.gitpurr.ids.sistemaAdopcion.repositories.toUsuarioEntity
 import org.slf4j.LoggerFactory
@@ -16,6 +18,8 @@ class UsuarioService {
 
     @Autowired
     lateinit var usuarioRepository: UsuarioRepository
+    @Autowired
+    lateinit var geocodioService: GeocodioService
 
 
     fun searchAllUsuarios(): List<Usuario> {
@@ -26,6 +30,11 @@ class UsuarioService {
     }
 
     fun addNewUsuario(usuario: Usuario): Usuario {
+
+        val(lat,lng) = geocodioService.obtenerCoordenadas(usuario.codigoPostal);
+
+        usuario.latitud = lat
+        usuario.longitud = lng
         val usuarioEntity = usuario.toUsuarioEntity()
         usuarioRepository.save(usuarioEntity)
         usuario.password = "****"
@@ -117,4 +126,21 @@ class UsuarioService {
             .digest(password.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }
     }
+
+
+    fun limpiarToken(token: String): String {
+        return token.removePrefix("Bearer ").trim()
+    }
+
+    fun obtenerUbicacion(token: String?): UbicacionResponse? {
+
+        if(token ==null ) return null;
+        val tokenLimpio = limpiarToken(token)
+        val usuarioEncontrado = findByToken(tokenLimpio) ?: return null
+
+        if(usuarioEncontrado.latitud == null || usuarioEncontrado.longitud == null) return  null
+
+        return usuarioEncontrado.toUbicacionResponse()
+    }
+
 }
