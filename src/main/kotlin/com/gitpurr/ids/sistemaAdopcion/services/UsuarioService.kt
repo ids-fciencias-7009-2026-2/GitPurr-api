@@ -18,6 +18,8 @@ class UsuarioService {
 
     @Autowired
     lateinit var usuarioRepository: UsuarioRepository
+    @Autowired
+    lateinit var geocodioService: GeocodioService
 
 
     fun searchAllUsuarios(): List<Usuario> {
@@ -28,6 +30,11 @@ class UsuarioService {
     }
 
     fun addNewUsuario(usuario: Usuario): Usuario {
+
+        val(lat,lng) = geocodioService.obtenerCoordenadas(usuario.codigoPostal);
+
+        usuario.latitud = lat
+        usuario.longitud = lng
         val usuarioEntity = usuario.toUsuarioEntity()
         usuarioRepository.save(usuarioEntity)
         usuario.password = "****"
@@ -121,11 +128,15 @@ class UsuarioService {
     }
 
 
+    fun limpiarToken(token: String): String {
+        return token.removePrefix("Bearer ").trim()
+    }
+
     fun obtenerUbicacion(token: String?): UbicacionResponse? {
 
         if(token ==null ) return null;
-
-        val usuarioEncontrado = findByToken(token) ?: return null
+        val tokenLimpio = limpiarToken(token)
+        val usuarioEncontrado = findByToken(tokenLimpio) ?: return null
 
         if(usuarioEncontrado.latitud == null || usuarioEncontrado.longitud == null) return  null
 

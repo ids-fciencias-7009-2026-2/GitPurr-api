@@ -196,6 +196,8 @@ class UsuarioController {
     fun obtenerUbicacion(
         @RequestHeader("Authorization") token: String?
     ) : ResponseEntity<UbicacionResponse> {
+
+        logger.info("Token recibido: $token")
         val ubicaionUsuario = usuarioService.obtenerUbicacion(token)
             ?: return ResponseEntity.status(401).build()
 
