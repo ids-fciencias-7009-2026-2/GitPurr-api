@@ -2,6 +2,8 @@ package com.gitpurr.ids.sistemaAdopcion.services
 
 import com.gitpurr.ids.sistemaAdopcion.domain.Animalito
 import com.gitpurr.ids.sistemaAdopcion.domain.toAnimalito
+import com.gitpurr.ids.sistemaAdopcion.domain.toAnimalitoResponse
+import com.gitpurr.ids.sistemaAdopcion.dto.response.AnimalitoResponse
 import com.gitpurr.ids.sistemaAdopcion.repositories.AnimalitoRepository
 import com.gitpurr.ids.sistemaAdopcion.repositories.UsuarioRepository
 import com.gitpurr.ids.sistemaAdopcion.repositories.toAnimalitoEntity
@@ -38,5 +40,29 @@ class AnimalitoService {
     fun obtenerAnimalitoPorId(id: Long): Animalito? {
         val entity = animalitoRepository.findById(id)
         return if (entity.isPresent) entity.get().toAnimalito() else null
+    }
+
+    fun limpiarToken(token: String): String {
+        return token.removePrefix("Bearer ").trim()
+    }
+
+    fun buscarAnimalitosCercanos(token: String?): List<AnimalitoResponse>? {
+        if(token == null) return null
+
+        val usuarioEntity = usuarioRepository.findByToken(limpiarToken(token)) ?: return null
+        val lat = usuarioEntity.latitud ?: return null
+        val lng = usuarioEntity.longitud ?: return null
+
+        val radioKm = 30.0
+
+        val delta = radioKm/111.0
+
+        val latMin = lat - delta
+        val latMax = lat + delta
+        val lngMin = lng - delta
+        val lngMax = lng + delta
+
+        return  animalitoRepository.buscarCercanos(latMin,lngMin,latMax, lngMax).map { it.toAnimalito().toAnimalitoResponse() }
+
     }
 }

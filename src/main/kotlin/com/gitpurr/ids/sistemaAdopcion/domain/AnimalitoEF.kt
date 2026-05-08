@@ -2,7 +2,6 @@ package com.gitpurr.ids.sistemaAdopcion.domain
 
 import com.gitpurr.ids.sistemaAdopcion.dto.request.CreateAnimalitoRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.response.AnimalitoResponse
-import com.gitpurr.ids.sistemaAdopcion.dto.response.UbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.entities.AnimalitoEntity
 
 fun CreateAnimalitoRequest.toAnimalito(): Animalito {
@@ -54,12 +53,5 @@ fun Animalito.toAnimalitoResponse(): AnimalitoResponse {
         longitudAprox = this.longitudAprox,
         fotoUrl = this.fotoUrl,
         usuarioId = this.usuarioId
-    )
-}
-
-fun Animalito.toUbicacionResponse(): UbicacionResponse {
-    return UbicacionResponse(
-        lat = this.latitudAprox!!,
-        lng = this.longitudAprox!!
     )
 }

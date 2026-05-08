@@ -3,6 +3,8 @@ package com.gitpurr.ids.sistemaAdopcion.controllers
 import com.gitpurr.ids.sistemaAdopcion.domain.toAnimalito
 import com.gitpurr.ids.sistemaAdopcion.domain.toAnimalitoResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.request.CreateAnimalitoRequest
+import com.gitpurr.ids.sistemaAdopcion.dto.response.AnimalitoResponse
+import com.gitpurr.ids.sistemaAdopcion.dto.response.UbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.services.AnimalitoService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -66,5 +68,16 @@ class AnimalitoController {
         } else {
             ResponseEntity.ok(animalito.toAnimalitoResponse())
         }
+    }
+
+    @GetMapping("/cercanos")
+    fun obtenerCercanos(
+        @RequestHeader("Authorization", required = false) token: String?,
+    ): ResponseEntity<List<AnimalitoResponse>> {
+
+        var animalitos = animalitoService.buscarAnimalitosCercanos(token)
+            ?: return ResponseEntity.notFound().build()
+
+        return ResponseEntity.ok(animalitos)
     }
 }
