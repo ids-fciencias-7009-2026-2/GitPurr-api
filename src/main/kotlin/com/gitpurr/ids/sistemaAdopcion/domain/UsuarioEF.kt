@@ -1,6 +1,7 @@
 package com.gitpurr.ids.sistemaAdopcion.domain
 
 import com.gitpurr.ids.sistemaAdopcion.dto.request.CreateUsuarioRequest
+import com.gitpurr.ids.sistemaAdopcion.dto.response.UbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.UsuarioResponse
 import com.gitpurr.ids.sistemaAdopcion.entities.UsuarioEntity
 import java.util.UUID
@@ -22,6 +23,7 @@ fun CreateUsuarioRequest.toUsuario(): Usuario {
         nombre = this.nombre,
         email = this.email,
         password = this.password,
+        codigoPostal = this.codigoPostal,
     )
 
 }
@@ -31,6 +33,17 @@ fun UsuarioEntity.toUsuario(): Usuario {
         id = this.id.toString(),
         nombre = this.nombre,
         email = this.email,
-        token = this.token)
+        token = this.token,
+        codigoPostal = this.codigoPostal,
+        latitud = this.latitud,
+        longitud = this.longitud
+    )
 }
 
+
+fun Usuario.toUbicacionResponse(): UbicacionResponse {
+    return UbicacionResponse(
+        lat = this.latitud,
+        lng = this.longitud,
+    )
+}

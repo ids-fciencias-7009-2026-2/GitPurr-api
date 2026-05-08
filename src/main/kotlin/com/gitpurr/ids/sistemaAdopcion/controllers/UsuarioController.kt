@@ -6,6 +6,7 @@ import com.gitpurr.ids.sistemaAdopcion.dto.request.CreateUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.request.LoginUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.response.LoginResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.LogoutResponse
+import com.gitpurr.ids.sistemaAdopcion.dto.response.UbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.UsuarioResponse
 import com.gitpurr.ids.sistemaAdopcion.services.UsuarioService
 import org.slf4j.Logger
@@ -163,5 +164,21 @@ class UsuarioController {
 
         // HTTP 200 OK
         return ResponseEntity.ok(usuarioActualizado)
+    }
+
+    /**
+     * Permite obtener las coordenadas de un usuario
+     * con el formato de lat y lng
+     */
+    @GetMapping("/me/ubicacion")
+    fun obtenerUbicacion(
+        @RequestHeader("Authorization") token: String?
+    ) : ResponseEntity<UbicacionResponse> {
+        val ubicaionUsuario = usuarioService.obtenerUbicacion(token)
+            ?: return ResponseEntity.status(401).build()
+
+        logger.info("Ubicacion obtenida en coordenadas:{}",ubicaionUsuario)
+
+        return ResponseEntity.ok(ubicaionUsuario)
     }
 }

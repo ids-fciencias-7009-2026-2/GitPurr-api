@@ -20,5 +20,8 @@ data class UsuarioEntity(
     var nombre: String = "",
     var createdAt: LocalDateTime = LocalDateTime.now(),
     var updatedAt: LocalDateTime = LocalDateTime.now(),
-    var deletedAt: LocalDateTime? = null
+    var deletedAt: LocalDateTime? = null,
+    var codigoPostal: String = "",
+    var latitud: Double = 0.0,
+    var longitud: Double = 0.0,
 )

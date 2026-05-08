@@ -1,7 +1,9 @@
 package com.gitpurr.ids.sistemaAdopcion.services
 
 import com.gitpurr.ids.sistemaAdopcion.domain.Usuario
+import com.gitpurr.ids.sistemaAdopcion.domain.toUbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.domain.toUsuario
+import com.gitpurr.ids.sistemaAdopcion.dto.response.UbicacionResponse
 import com.gitpurr.ids.sistemaAdopcion.repositories.UsuarioRepository
 import com.gitpurr.ids.sistemaAdopcion.repositories.toUsuarioEntity
 import org.slf4j.LoggerFactory
@@ -63,6 +65,15 @@ class UsuarioService {
     fun tokenGenerator(): String {
         val token = UUID.randomUUID().toString()
         return token
+    }
+
+    fun obtenerUbicacion(token: String?): UbicacionResponse? {
+
+        if(token ==null ) return null;
+
+        val usuarioEncontrado = findByToken(token) ?: return null
+
+        return usuarioEncontrado.toUbicacionResponse()
     }
 
 }
