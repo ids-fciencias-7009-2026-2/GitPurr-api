@@ -51,11 +51,11 @@ data class Usuario(
      * Latitud recuperada a partir del codigo postal.
      * Campo actualizable por la relacion con codigo postal.
      */
-    var latitud: Double = 0.0,
+    var latitud: Double? = null,
 
     /**
      * Longitud recuperada a paritr del codigo postal.
      * Campo actualizable por la relacion con codigo postal.
      */
-    var longitud: Double = 0.0,
+    var longitud: Double? = null,
 )

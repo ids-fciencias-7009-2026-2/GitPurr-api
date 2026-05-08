@@ -27,8 +27,8 @@ data class UsuarioEntity(
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null,
     var codigoPostal: String = "",
-    var latitud: Double = 0.0,
-    var longitud: Double = 0.0,
+    var latitud: Double? = null,
+    var longitud: Double? = null,
 ) {
 
     @PrePersist

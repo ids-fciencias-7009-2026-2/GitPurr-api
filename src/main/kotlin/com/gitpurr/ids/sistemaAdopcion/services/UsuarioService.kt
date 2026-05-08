@@ -119,11 +119,15 @@ class UsuarioService {
             .digest(password.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }
     }
+
+
     fun obtenerUbicacion(token: String?): UbicacionResponse? {
 
         if(token ==null ) return null;
 
         val usuarioEncontrado = findByToken(token) ?: return null
+
+        if(usuarioEncontrado.latitud == null || usuarioEncontrado.longitud == null) return  null
 
         return usuarioEncontrado.toUbicacionResponse()
     }

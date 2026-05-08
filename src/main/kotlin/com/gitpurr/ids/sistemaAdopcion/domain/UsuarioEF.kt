@@ -43,7 +43,7 @@ fun UsuarioEntity.toUsuario(): Usuario {
 
 fun Usuario.toUbicacionResponse(): UbicacionResponse {
     return UbicacionResponse(
-        lat = this.latitud,
-        lng = this.longitud,
+        lat = this.latitud!!,
+        lng = this.longitud!!,
     )
 }
