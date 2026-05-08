@@ -4,6 +4,7 @@ import com.gitpurr.ids.sistemaAdopcion.domain.Usuario
 import com.gitpurr.ids.sistemaAdopcion.domain.toUsuario
 import com.gitpurr.ids.sistemaAdopcion.dto.request.CreateUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.request.LoginUsuarioRequest
+import com.gitpurr.ids.sistemaAdopcion.dto.request.UpdateUsuarioRequest
 import com.gitpurr.ids.sistemaAdopcion.dto.response.LoginResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.LogoutResponse
 import com.gitpurr.ids.sistemaAdopcion.dto.response.UbicacionResponse
@@ -150,20 +151,41 @@ class UsuarioController {
     // ==========================================================
     @PutMapping
     fun actualizarUsuario(
-        @RequestBody request: CreateUsuarioRequest
-    ): ResponseEntity<UsuarioResponse> {
+        @RequestHeader("Authorization", required = false) token: String?,
+        @RequestBody request: UpdateUsuarioRequest
+    ): ResponseEntity<Any> {
 
-        // Como no hay BD ni autenticación real, simulamos que el usuario actual es el id = 1
-        val usuarioActualizado = UsuarioResponse(
-            id = 1,
-            nombre = request.nombre,
-            email = request.email
-        )
+        logger.info("Token recibido: $token")
 
-        logger.info("Usuario actualizado (simulado): $usuarioActualizado")
+        if (token == null) {
+            return ResponseEntity.status(401).build()
+        }
 
-        // HTTP 200 OK
-        return ResponseEntity.ok(usuarioActualizado)
+        val soloToken = token.removePrefix("Bearer ").trim()
+
+        // verificamos que venga al menos un campo en el body
+        if (request.nombre == null && request.email == null && request.passwordNew == null) {
+            return ResponseEntity.badRequest().build()
+        }
+
+        return try {
+            val resultado = usuarioService.actualizarUsuario(
+                token = soloToken,
+                nombre = request.nombre,
+                email = request.email,
+                passwordOld = request.passwordOld,
+                passwordNew = request.passwordNew?.let { hashPassword(it) }
+            )
+
+            if (resultado == null) {
+                ResponseEntity.status(401).build()
+            } else {
+                ResponseEntity.ok(resultado)
+            }
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(403).build()    // acceso denegado (contraseña actual no proporcionada o incorrecta)
+        }
+
     }
 
     /**
@@ -181,4 +203,5 @@ class UsuarioController {
 
         return ResponseEntity.ok(ubicaionUsuario)
     }
+
 }
