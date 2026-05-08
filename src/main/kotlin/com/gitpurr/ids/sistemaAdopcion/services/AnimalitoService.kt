@@ -29,4 +29,9 @@ class AnimalitoService {
     fun listarAnimalitos(): List<Animalito> {
         return animalitoRepository.findAll().map { it.toAnimalito() }
     }
+
+    fun obtenerAnimalitoPorId(id: Long): Animalito? {
+        val entity = animalitoRepository.findById(id)
+        return if (entity.isPresent) entity.get().toAnimalito() else null
+    }
 }
