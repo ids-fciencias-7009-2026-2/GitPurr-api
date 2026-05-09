@@ -7,6 +7,7 @@ import com.gitpurr.ids.sistemaAdopcion.dto.response.AnimalitoResponse
 import com.gitpurr.ids.sistemaAdopcion.repositories.AnimalitoRepository
 import com.gitpurr.ids.sistemaAdopcion.repositories.UsuarioRepository
 import com.gitpurr.ids.sistemaAdopcion.repositories.toAnimalitoEntity
+import com.gitpurr.ids.sistemaAdopcion.adapters.EmailAdapter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -20,6 +21,9 @@ class AnimalitoService {
 
     @Autowired
     lateinit var usuarioRepository: UsuarioRepository
+
+    @Autowired
+    lateinit var emailAdapter: EmailAdapter
 
     fun registrarAnimalito(token: String, animalito: Animalito): Animalito? {
         val usuarioEntity = usuarioRepository.findByToken(token) ?: return null
@@ -65,4 +69,27 @@ class AnimalitoService {
         return  animalitoRepository.buscarCercanos(latMin,lngMin,latMax, lngMax).map { it.toAnimalito().toAnimalitoResponse() }
 
     }
+
+    fun expresarInteres(token: String, animalitoId: Long): Result<Any> {
+        val interesado = usuarioRepository.findByToken(token) ?: return Result.failure(Exception("No autorizado"))
+        val animalito = animalitoRepository.findById(animalitoId).orElse(null) ?: return Result.failure(Exception("Animalito no encontrado"))
+        val dueno = animalito.usuario ?: return Result.failure(Exception("Sin dueño"))
+
+        val htmlTemplate = """
+    <div style="font-family: Arial, sans-serif; border: 1px solid #ccc; padding: 20px;">
+        <h1 style="color: #e07b39;">GitPurr 🐾</h1>
+        <p>Hola, <strong>${dueno.nombre}</strong>,</p>
+        <p>Alguien está interesado en adoptar a <strong>${animalito.nombre}</strong></p>
+        <p>Puedes contactar a <strong>${interesado.nombre}</strong> en: ${interesado.email}</p>
+        <hr>
+        <footer style="font-size: 0.8em; color: #777;">
+            Este es un correo automático, por favor no responder.
+        </footer>
+    </div>
+""".trimIndent()
+
+        val subject = "¡Alguien quiere adoptar a ${animalito.nombre}!"
+        return emailAdapter.sendHtmlEmail(dueno.email, subject, htmlTemplate)
+    }
+
 }

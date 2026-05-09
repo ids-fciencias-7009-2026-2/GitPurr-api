@@ -80,4 +80,17 @@ class AnimalitoController {
 
         return ResponseEntity.ok(animalitos)
     }
+
+    @PostMapping("/{id}/interes")
+    fun expresarInteres(
+        @RequestHeader("Authorization", required = false) token: String?,
+        @PathVariable id: Long
+    ): ResponseEntity<Any> {
+        if (token == null) return ResponseEntity.status(401).build()
+
+        val soloToken = token.removePrefix("Bearer ").trim()
+        val resultado = animalitoService.expresarInteres(soloToken, id)
+
+        return ResponseEntity.ok(Any())
+    }
 }
